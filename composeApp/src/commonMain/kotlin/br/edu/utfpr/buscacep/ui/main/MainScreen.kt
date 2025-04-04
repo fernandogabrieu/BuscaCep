@@ -14,47 +14,52 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel = viewModel()
 ) {
-    val isLoading = false
-    val hasError = false
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "oi", // TODO uiState.result
-            onValueChange = {}, // TODO onCepChanged
+            value = viewModel.uiState.inputCep,
+            onValueChange = viewModel::onCepChanged,
             label = null,
-            isError = false, // TODO uiState.hasError
+            placeholder = { Text("Digite o CEP")},
+            isError = viewModel.uiState.hasError,
             supportingText = {
-                if (hasError) Text("Entrada inválida")
+                if (viewModel.uiState.hasError)
+                    Text("Entrada inválida")
             },
         )
         ElevatedButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {}, //TODO onSearchClick
-            enabled = true // TODO uiState.isButtonEnabled
+            onClick = viewModel::searchCep,
+            enabled = viewModel.uiState.isButtonEnabled
         ) {
-            if (isLoading) {
+            if (viewModel.uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
             } else {
                 Text("Buscar")
             }
         }
 
-        Text("CEP: ") // TODO  $uiState.cep")
-        Text("Logradouro: ") // TODO  $uiState.logradouro")
-        Text("Bairro: ") // TODO  $uiState.bairro")
-        Text("Localidade: ") // TODO  $uiState.localidade")
-        Text("UF: ") // TODO  $uiState.uf")
+        viewModel.uiState.result?.let { result ->
+            Column(modifier = Modifier.padding(top = 16.dp)) {
+                Text("CEP: ${result.cep}")
+                Text("Rua: ${result.street}")
+                Text("Bairro: ${result.neighborhood}")
+                Text("Cidade: ${result.location}")
+                Text("Estado: ${result.state}")
+            }
+        }
     }
 }
