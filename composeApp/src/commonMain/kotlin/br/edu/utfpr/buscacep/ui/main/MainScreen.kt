@@ -1,5 +1,7 @@
 package br.edu.utfpr.buscacep.ui.main
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,44 +25,54 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel()
 ) {
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.Start
+            .padding(16.dp)
     ) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = viewModel.uiState.inputCep,
-            onValueChange = viewModel::onCepChanged,
-            label = null,
-            placeholder = { Text("Digite o CEP")},
-            isError = viewModel.uiState.hasError,
-            supportingText = {
-                if (viewModel.uiState.hasError)
-                    Text("Entrada inválida")
-            },
-        )
-        ElevatedButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = viewModel::searchCep,
-            enabled = viewModel.uiState.isButtonEnabled
+        Column (
+            modifier = Modifier.align(Alignment.TopStart),
+            horizontalAlignment = Alignment.Start
         ) {
-            if (viewModel.uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp))
-            } else {
-                Text("Buscar")
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.uiState.inputCep,
+                onValueChange = viewModel::onCepChanged,
+                label = null,
+                placeholder = { Text("Digite o CEP")},
+                isError = viewModel.uiState.hasError,
+                enabled = !viewModel.uiState.isLoading,
+                supportingText = {
+                    if (viewModel.uiState.hasError)
+                        Text("Entrada inválida")
+                },
+            )
+            ElevatedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = viewModel::searchCep,
+                enabled = !viewModel.uiState.isLoading && viewModel.uiState.isValidCep
+            ) {
+                if (viewModel.uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Buscar")
+                }
+            }
+            Column(modifier = Modifier.padding(top = 16.dp)) {
+                Text("CEP: ${viewModel.uiState.result?.cep ?: ""}")
+                Text("Rua: ${viewModel.uiState.result?.street ?: ""}")
+                Text("Bairro: ${viewModel.uiState.result?.neighborhood ?: ""}")
+                Text("Cidade: ${viewModel.uiState.result?.location ?: ""}")
+                Text("Estado: ${viewModel.uiState.result?.state ?: ""}")
             }
         }
-
-        viewModel.uiState.result?.let { result ->
-            Column(modifier = Modifier.padding(top = 16.dp)) {
-                Text("CEP: ${result.cep}")
-                Text("Rua: ${result.street}")
-                Text("Bairro: ${result.neighborhood}")
-                Text("Cidade: ${result.location}")
-                Text("Estado: ${result.state}")
-            }
+        if (viewModel.uiState.hasError) {
+            Snackbar(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                content = { Text("Ocorreu um erro ao consultar o CEP. Aguarde um momento e tente novamente.") }
+            )
         }
     }
 }

@@ -14,10 +14,10 @@ class MainViewModel : ViewModel() {
     var uiState: MainUiState by mutableStateOf(MainUiState())
         private set
 
-    fun onCepChanged(cep: String){
+    fun onCepChanged(cep: String) {
         uiState = uiState.copy(
             inputCep = cep,
-            isButtonEnabled = cep.length == 8 //ou alguma outra validação aqui
+            isValidCep = cep.length == 8 //ou alguma outra validação aqui
         )
     }
 
@@ -26,7 +26,8 @@ class MainViewModel : ViewModel() {
 
         uiState = uiState.copy(
             isLoading = true,
-            hasError = false
+            hasError = false,
+            result = null
         )
 
         viewModelScope.launch {

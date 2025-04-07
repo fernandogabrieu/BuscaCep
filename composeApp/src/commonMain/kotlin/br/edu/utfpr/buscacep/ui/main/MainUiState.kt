@@ -6,7 +6,7 @@ data class MainUiState(
     val inputCep: String = "",
     val isLoading: Boolean = false,
     val hasError: Boolean = false,
-    val isButtonEnabled: Boolean = false,
+    val isValidCep: Boolean = false,
     val result: CepResult? = null
 ) {
     val success get(): Boolean = !isLoading && !hasError
