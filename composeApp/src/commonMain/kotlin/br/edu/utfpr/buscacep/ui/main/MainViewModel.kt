@@ -5,12 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.edu.utfpr.buscacep.data.CepResult
-import kotlinx.coroutines.delay
+import br.edu.utfpr.buscacep.service.HttpClientFactory
+import br.edu.utfpr.buscacep.service.ViaCepService
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
+    private val viaCepService = ViaCepService(HttpClientFactory().create())
+
     var uiState: MainUiState by mutableStateOf(MainUiState())
         private set
 
@@ -31,21 +32,14 @@ class MainViewModel : ViewModel() {
         )
 
         viewModelScope.launch {
-            delay(1500)
-            val success = Random.nextBoolean() // chamada da api = true por exemplo
-            uiState = if (success) {
-                uiState.copy(
-                    result = CepResult(
-                        cep = "cep exemplo",
-                        street = "rua exemplo",
-                        neighborhood = "bairro exemplo",
-                        location = "localidade exemplo",
-                        state = "estado exemplo"
-                    ),
-                    isLoading = false
+            try{
+                val result = viaCepService.buscarCep(uiState.inputCep)
+                uiState = uiState.copy(
+                    isLoading = false,
+                    result = result
                 )
-            } else {
-                uiState.copy(
+            } catch (e: Exception) {
+                uiState = uiState.copy(
                     isLoading = false,
                     hasError = true
                 )

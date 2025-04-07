@@ -1,6 +1,6 @@
 package br.edu.utfpr.buscacep.ui.main
 
-import br.edu.utfpr.buscacep.data.CepResult
+import br.edu.utfpr.buscacep.data.model.CepResult
 
 data class MainUiState(
     val inputCep: String = "",
@@ -8,6 +8,4 @@ data class MainUiState(
     val hasError: Boolean = false,
     val isValidCep: Boolean = false,
     val result: CepResult? = null
-) {
-    val success get(): Boolean = !isLoading && !hasError
-}
+)

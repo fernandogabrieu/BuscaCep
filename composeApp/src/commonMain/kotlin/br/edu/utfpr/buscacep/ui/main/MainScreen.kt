@@ -1,6 +1,5 @@
 package br.edu.utfpr.buscacep.ui.main
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,11 +40,7 @@ fun MainScreen(
                 label = null,
                 placeholder = { Text("Digite o CEP")},
                 isError = viewModel.uiState.hasError,
-                enabled = !viewModel.uiState.isLoading,
-                supportingText = {
-                    if (viewModel.uiState.hasError)
-                        Text("Entrada inválida")
-                },
+                enabled = !viewModel.uiState.isLoading
             )
             ElevatedButton(
                 modifier = Modifier.fillMaxWidth(),

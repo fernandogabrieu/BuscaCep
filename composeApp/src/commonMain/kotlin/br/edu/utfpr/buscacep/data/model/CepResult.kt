@@ -1,4 +1,4 @@
-package br.edu.utfpr.buscacep.data
+package br.edu.utfpr.buscacep.data.model
 
 data class CepResult(
     val cep: String = "",
